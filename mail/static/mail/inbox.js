@@ -153,8 +153,12 @@ function render_email(mailbox, id, subject, timestamp, sender, read) {
   if (read === true && mailbox === "inbox") {
     console.log("read already");
     element.classList.add("border-start-3", "border-danger");
+    element.style.backgroundColor = "grey";
   }
 
+  if (read === false && mailbox === "inbox") {
+    element.style.backgroundColor = "white";
+  }
   // id element
   const idElement = document.createElement("div");
   idElement.innerHTML = `${sender}`;
@@ -206,11 +210,26 @@ function fetch_each_mail(mailbox, id) {
       emailview.innerHTML = "";
 
       // fill the innerHtml
-      emailview.innerHTML = `${id} - ${sender} - ${recipients} - ${subject} - ${body} - ${timestamp} - ${read} - ${archived}`;
+      const fromElements = document.createElement("div");
+      fromElements.innerHTML = `<b>From: </b> ${sender}`;
+      const toElements = document.createElement("div");
+      toElements.innerHTML = `<b>To: </b> ${recipients}`;
+      const subjectElements = document.createElement("div");
+      subjectElements.innerHTML = `<b>Subject: </b> ${subject}`;
+      const timestampElements = document.createElement("div");
+      timestampElements.innerHTML = `<b>Timestamp: </b> ${timestamp}`;
+      const bodyElements = document.createElement("div");
+      bodyElements.innerHTML = `<b>Body: </b> ${body}`;
+      // emailview.innerHTML = `${id} - ${sender} - ${recipients} - ${subject} - ${body} - ${timestamp} - ${read} - ${archived}`;
+      emailview.appendChild(fromElements);
+      emailview.appendChild(toElements);
+      emailview.appendChild(subjectElements);
+      emailview.appendChild(timestampElements);
+      emailview.appendChild(bodyElements);
 
       // append archive and unarchive btn conditionally
       const archiveBtn = document.createElement("button");
-      archiveBtn.classList.add("btn", "btn-primary");
+      archiveBtn.classList.add("btn", "btn-primary", "m-2");
       archiveBtn.innerHTML = "Archive";
 
       // Add event listener to the archive btn
@@ -222,20 +241,21 @@ function fetch_each_mail(mailbox, id) {
 
       // Add archive btn
       if (mailbox === "inbox") {
-        // if (archived === false) {
         emailview.appendChild(archiveBtn);
-        // }
       }
 
       // unarchive btn
       const unarchiveBtn = document.createElement("button");
-      unarchiveBtn.classList.add("btn", "btn-danger");
+      unarchiveBtn.classList.add("btn", "btn-danger", "m-2");
       unarchiveBtn.innerHTML = "Unarchive";
 
       // add eventlistener to the unarhive btn
       unarchiveBtn.addEventListener("click", () => {
         console.log("unarhive btn clicked");
         toggle_archive(id, false);
+
+        // Add time interval
+        // setTimeout(load_mailbox("inbox"), 0);
         load_mailbox("inbox");
       });
 
@@ -270,7 +290,9 @@ function fetch_each_mail(mailbox, id) {
         document.querySelector("#compose-subject").value = haveRe
           ? subject
           : newSubject;
-        document.querySelector("#compose-body").value = `
+        document.querySelector("#compose-body").value = ` 
+          
+          <hr />
           On ${timestamp} ${sender} wrote: ${body}
         `;
       });
